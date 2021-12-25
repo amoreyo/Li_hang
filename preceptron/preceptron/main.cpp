@@ -13,7 +13,7 @@ using namespace std;
 const int data_number = 3;
 // const int data_range = 2;
 const int Dimension = 2;
-const float learning_rate = 0.5;
+const float learning_rate = 1;
 typedef float Class;
 
 struct Point
@@ -42,6 +42,94 @@ vector<int> assess(Point line, Point *Data)
 	}
 	return index;
 }
+
+
+// the origin_version
+Point origin_version(Point line, Point *Data)
+{
+	Point Line;
+	Line = line;
+	// than the circl
+	// find the wrong classification
+	while (1) // the end sign is all data be classify correctly
+	{
+		vector<int> index = assess(Line, Data);
+		if (index.empty())
+			break;
+		// int cap = index.size();
+		int rand_index = rand() % index.size();
+		Line.y = Line.y + learning_rate * Data[rand_index].y;
+		for (int i = 0; i < Dimension; i++)
+		{
+			Line.position[i] = Line.position[i] + learning_rate * Data[rand_index].position[i] * Data[rand_index].y;
+		}
+	}
+	return Line;
+}
+
+// the pait_version
+Point pair_version(Point line, Point* Data)
+{
+	Point Line = line;
+
+	// init the a
+	float arf[data_number] = { 0 };
+
+	float Gram[data_number][data_number] = { 0 };
+	// init Gram
+	for (int i = 0; i < data_number; i++)
+	{
+		for (int j = 0; j < 3 - i; j++)
+		{
+			int J = j + i;
+			for (int m = 0; m < Dimension; m++)
+			{
+				Gram[i][J] += Data[i].position[m] * Data[J].position[m];
+			}
+			if (i != J)
+				Gram[J][i] = Gram[i][J];
+		}
+	}
+
+	while (1)
+	{
+		vector<int> index = assess(Line, Data);
+		if (index.empty())
+			break;
+		int rand_index = rand() % index.size();
+
+		float var = 0;
+		for (int i = 0; i < data_number; i++)
+		{
+			var += arf[i] * Data[i].y * Gram[i][rand_index];
+		}
+		
+		if (Data[rand_index].y * (var + Line.y) <= 0)
+		{
+			Line.y += learning_rate * Data[rand_index].y;
+			arf[rand_index] += learning_rate;
+		}
+		
+		// I'm making an unnecessary move
+		// really shit
+		// because I use assess() to assess the wrong classfy point 
+		for (int i = 0; i < Dimension; i++)
+		{
+			Line.position[i] = 0;
+		}
+		for (int i = 0; i < data_number; i++)
+		{
+			for (int j = 0; j < Dimension; j++)
+			{
+				Line.position[j] += arf[i] * Data[i].position[j] * Data[i].y;
+			}
+		}
+	}
+	
+
+	return Line;
+}
+
 int main()
 {
 	srand(time(NULL));
@@ -74,21 +162,7 @@ int main()
 		line.position[j] = 0;
 	}
 
-	// than the circl
-	// find the wrong classification
-	while (1) // the end sign is all data be classify correctly
-	{
-		vector<int> index = assess(line, Data);
-		if (index.empty())
-			break;
-		// int cap = index.size();
-		int rand_index = rand() % index.size();
-		line.y = line.y + learning_rate * Data[rand_index].y;
-		for (int i = 0; i < Dimension; i++)
-		{
-			line.position[i] = line.position[i] + learning_rate * Data[rand_index].position[i] * Data[rand_index].y;
-		}
-	}
+	line = pair_version(line, Data);
 	
 	for (int i = 0; i < Dimension; i++)
 	{
@@ -103,3 +177,8 @@ int main()
 //1 3 3
 //1 4 3
 //1.5X[0] + 1.5X[1] + -3.5
+
+// ok now is 12/25 I think it's not time to be depression. get up!!
+// conclusion: 
+// the core of origin_version and pair_version is same 
+// so origin_vaersion is easy to understand, and the pari_version will be unnecessary??
