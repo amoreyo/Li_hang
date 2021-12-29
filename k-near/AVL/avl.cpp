@@ -1,3 +1,6 @@
+
+
+#include<iomanip>
 #include<iostream>
 using namespace std;
 // declare the code is not original
@@ -38,8 +41,8 @@ public:
     AVLTreeNode<T>* search(T key);
     AVLTreeNode<T>* iterativeSearch(T key);
 
-    T minimum;
-    T maximum;
+    T minimum();
+    T maximum();
 
     void insert(T key);
     void remove(T key);
@@ -55,8 +58,8 @@ private:
     AVLTreeNode<T>* search(AVLTreeNode<T>* x, T key) const;
     AVLTreeNode<T>* iterativeSearch(AVLTreeNode<T>* x, T key) const;
 
-    AVLTreeNode<T>* minimum(AVLTreeNode<T>* x, T key) const;
-    AVLTreeNode<T>* maximum(AVLTreeNode<T>* x, T key) const;
+    AVLTreeNode<T>* minimum(AVLTreeNode<T>* x);
+    AVLTreeNode<T>* maximum(AVLTreeNode<T>* x);
 
     AVLTreeNode<T>* leftLeftRotation(AVLTreeNode<T>* k2);
     AVLTreeNode<T>* rightRightRotation(AVLTreeNode<T>* k1);
@@ -71,6 +74,19 @@ private:
     void print(AVLTreeNode<T>* treem, T key, int direction);
 
 };
+
+// struct function
+template <class T>
+AVLTree<T>::AVLTree():mRoot(NULL)
+{
+}
+
+// destruct function
+template <class T>
+AVLTree<T>::~AVLTree()
+{
+    destory(mRoot);
+}
 
 template <class T>
 int AVLTree<T>::height(AVLTreeNode<T>* tree)
@@ -93,6 +109,64 @@ int AVLTree<T>::max(int a,int b)
 {
     return a>b ? a:b;
 } 
+
+// 在成员函数后面加上const
+// 当我们在主函数里const实例化了该类的一个对象
+// 那该对象就只能使用const过的成员函数
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::search(AVLTreeNode<T>* x, T key) const
+{
+
+}
+
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::minimum(AVLTreeNode<T>* tree)
+{
+    if (tree == NULL)
+    {
+        cout << "the tree is enpty!" << endl;
+        return NULL;
+    }
+    while (tree->left != NULL)
+    {
+        tree = tree->left;
+    }
+    return tree;
+}
+
+template <class T>
+T AVLTree<T>::minimum()
+{
+    AVLTreeNode<T>* p = minimum(mRoot);
+    if (p == NULL)
+        return (T)NULL;
+    return p->key;
+}
+
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::maximum(AVLTreeNode<T>* tree)
+{
+    if (tree == NULL)
+    {
+        cout << "the tree is empty!" << endl;
+        return NULL;
+    }
+    while (tree->right != NULL)
+    {
+        tree = tree->right;
+    }
+    return tree;
+    
+}
+
+template <class T>
+T AVLTree<T>::maximum()
+{
+    AVLTreeNode<T>* p = maximum(mRoot);
+    if(p == NULL)
+        return (T)NULL; // learn!
+    return p->key;
+}
 
 template <class T>
 AVLTreeNode<T>* AVLTree<T>::leftLeftRotation(AVLTreeNode<T>* k2)
@@ -134,4 +208,148 @@ AVLTreeNode<T>* AVLTree<T>::rightRightRotation(AVLTreeNode<T>* k1)
     k1->right = leftLeftRotation(k1->left);
 
     return rightRightRotation(k1);
+}
+
+
+// insert key and return the tree root
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::insert(AVLTreeNode<T>* &tree, T key)
+{
+    if (tree == NULL)
+    {
+        tree = new AVLTreeNode<T>(key, NULL, NULL);
+        if (tree == NULL)
+        {
+            cout << "ERROR: no enough space!" << endl;
+            return NULL;
+        }
+    }
+    else if (key < tree->key)
+    {
+        tree->left = insert(tree->left, key);
+        if (height(tree->left) - height(tree->right) == 2)
+        {
+            if (key < tree->left->key)
+                tree = leftLeftRotation(tree);
+            else
+                tree = leftRightRotation(tree);
+        }
+    }
+    else if (key > tree->key)
+    {
+        tree->right = insert(tree->right, key)
+        if (height(tree->right) - height(tree->left) == 2)
+        {
+            if (key > tree->right->key)
+                tree = rightRightRotation(tree);
+            else    
+                tree = rightLeftRotation(tree);
+        }
+    }
+    else
+    {
+        cout << "fail to insert, the tree already have the same node" << endl;
+    }
+
+    tree->height = max( height(tree->right), height(tree->left)) + 1;
+
+    return tree;
+}
+
+template <class T>
+void AVLTree<T>::insert(T key)
+{
+    insert(mRoot, key);
+}
+
+
+
+
+// del the node z and return the tree root
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::remove(AVLTreeNode<T>* &tree, AVLTreeNode<T>* z)
+{
+    if (tree == NULL || z == NULL)
+    {
+        return NULL;
+    }
+
+    if (z->key < tree->key)
+    {
+        tree->left = remove(tree->left, key);
+
+        if (height(tree->right) - height(tree->left) == 2)
+        {
+            AVLTreeNode<T>* r = tree->right;
+            if (height(r->left) > height(r->right))
+                tree = rightLeftRotation(tree);
+            else
+                tree = rightRightRotation(tree);
+        }
+    }
+    else if (z->key > tree->key)
+    {
+       tree->right = remove(tree->right, key);
+
+       if (height(tree->left) - height(tree->right) == 2)
+       {
+            AVLTreeNode<T>* r = tree->left;
+            if (height(r->right) > height(r->left))
+                tree = leftRightRotation(tree);
+            else
+                tree = leftLeftRotation(tree);
+       }
+    }
+    else
+    {
+        if ((tree->left != NULL) && (tree->right != NULL))
+        {
+            if (height(tree->left) > height(tree->right))
+            {
+                AVLTreeNode<T>* max = maximum(tree->left);
+                tree->key = max->key;
+                tree->left = remove(tree->left, max);
+            }
+            else
+            {
+                AVLTreeNode<T>* min = minimum(tree->right);
+                tree->key = min->key;
+                tree->right = remove(tree->right, min);
+            }
+        }
+        else
+        {
+            AVLTreeNode<T>* tmp = tree;
+            tree = (tree->left != NULL) ? tree->left : tree->right;
+            delete tmp;
+        }
+    }
+    return tree;
+}
+
+template <class T>
+void AVLTree<T>::destory(AVLTreeNode<T>* &tree)
+{
+    if (tree == NULL)
+        return;
+    if (tree->left != NULL)
+    {
+        destory(tree->left);
+
+    }
+
+    if (tree->right != NULL)
+    {
+        destory(tree->right);
+    }
+
+    delete tree;
+
+    return;
+}
+
+template <class T>
+void AVLTree<T>::destory()
+{
+    destory(mRoot);
 }
