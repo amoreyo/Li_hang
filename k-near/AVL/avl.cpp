@@ -53,7 +53,7 @@ private:
 
     void preOrder(AVLTreeNode<T>* tree) const;
     void inOrder(AVLTreeNode<T>* tree) const;
-    void inOrder(AVLTreeNode<T>* tree) const;
+    void postOrder(AVLTreeNode<T>* tree) const;
 
     AVLTreeNode<T>* search(AVLTreeNode<T>* x, T key) const;
     AVLTreeNode<T>* iterativeSearch(AVLTreeNode<T>* x, T key) const;
@@ -110,13 +110,112 @@ int AVLTree<T>::max(int a,int b)
     return a>b ? a:b;
 } 
 
+template <class T>
+void AVLTree<T>::preOrder(AVLTreeNode<T>* tree) const
+{
+    if (tree != NULL)
+    {
+        cout << tree->key << "  ";
+        preOrder(tree->left);
+        // cout << tree->key << "  ";
+        preOrder(tree->right);
+    }
+}
+
+template <class T>
+void AVLTree<T>::preOrder()
+{
+    preOrder(mRoot);
+}
+
+template <class T>
+void AVLTree<T>::inOrder(AVLTreeNode<T>* tree) const
+{
+//    if (tree == NULL)
+//        return;
+//    preOrder(tree->left);
+//    if (tree->left != NULL)
+//        cout << tree->left->key << "  ";
+//    cout << tree->key << "  ";
+//    preOrder(tree->right);
+//    if (tree->right != NULL)
+//        cout << tree->right->key << "  ";
+//    return;
+    if (tree != NULL)
+    {
+        inOrder(tree->left);
+        cout << tree->key << "  ";
+        inOrder(tree->right);
+    }
+}
+
+template <class T>
+void AVLTree<T>::inOrder()
+{
+    inOrder(mRoot);
+}
+
+template <class T>
+void AVLTree<T>::postOrder(AVLTreeNode<T>* tree) const
+{
+    if (tree != NULL)
+    {
+        // cout << tree->key << "  ";
+        postOrder(tree->left);
+        // cout << tree->key << "  ";
+        postOrder(tree->right);
+        cout << tree->key << "  ";
+
+    }
+}
+
+template <class T>
+void AVLTree<T>::postOrder()
+{
+    postOrder(mRoot);
+}
+
 // 在成员函数后面加上const
 // 当我们在主函数里const实例化了该类的一个对象
 // 那该对象就只能使用const过的成员函数
 template <class T>
 AVLTreeNode<T>* AVLTree<T>::search(AVLTreeNode<T>* x, T key) const
 {
+    if (x == NULL || x->key == key)
+        return x;
+    
+    if (key > x->key)
+        return x->right;
+    else 
+        return x->left;
+}
 
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::search(T key)
+{
+    return search(mRoot, key);
+}
+
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::iterativeSearch(AVLTreeNode<T>* x, T key) const
+{
+    if (x == NULL || x->key == key)
+        return x;
+    while (x != NULL && x->key != key)
+    {
+        if (key > x->key)
+            x = x->right;
+        else 
+            x = x->left;
+    }
+    return x;
+    
+}
+
+template <class T>
+AVLTreeNode<T>* AVLTree<T>::iterativeSearch(T key)
+{
+    return iterativeSearch(mRoot, key);
 }
 
 template <class T>
