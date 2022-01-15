@@ -90,39 +90,12 @@
 // plz using class. OK
 
 #include<iostream>
+#include"B.h"
 using namespace std;
 
-#define M 3
-
-typedef struct BNODE
-{
-    NODE *nodes[M];
-    BNODE *lastnode = NULL;
-    int number;
-}Bnode;
-
-typedef struct NODE
-{
-    int data;
-    Bnode *point;
-}node;
-
-Bnode *init()
-{
-    Bnode *root = (Bnode*)malloc(sizeof(Bnode));
-    if(root == NULL)
-        return NULL;
-    return root;
-}
-
-Bnode *insert(int data, Bnode *root)
-{
-    
-}
 
 int main()
 {
-    Bnode *root = init();
-
+    // cout << 3/2 <<endl;
     return 0;
 }
