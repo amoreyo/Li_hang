@@ -43,7 +43,7 @@ class BTree{
         void insert(int data);
         void destory();
         bool find(int data);
-        void del(int data);
+        bool del(int data);
         void print();
 };
 
@@ -225,7 +225,8 @@ bool BTree::find(int data)
         return true;
 }
 
-void BTree::del(int data)
+// only the leaf BNODE
+bool BTree::del(int data)
 {
     // bool find_true = find(data);
     // if(!find_true)
@@ -234,6 +235,46 @@ void BTree::del(int data)
     //     return;
     // }
 
+    // pre act
+    BNODE *cur_bnode = FIND(data);
+    if(cur_bnode == NULL)
+        return false;
+    if(cur_bnode->leaf_node == false)
+    {
+        return false
+    }
+    else
+    {
+        if(cur_bnode->number > M/2)
+        {
+            NODE *cur_node = cur_bnode->nodes_head;
+            NODE *pre_node = NULL;
+            for(int i = 0; i< cur_bnode->number ;i++)
+            {
+                if(cur_node->data == data)
+                {
+                    if(pre_node == NULL)
+                    {
+                        cur_bnode->nodes_head = cur_node->next_node;
+                        delete cur_node;
+                        return true;
+                    }
+                    else
+                    {
+                        pre_node->next_node = cur_node->next_node;
+                        delete cur_node;
+                        return true;
+                    }
+                }
+                pre_node = cur_node;
+                cur_node = cur_node->next_node;
+            }
+        }
+        else if()
+        {
+            
+        }
+    }
 
 }
 
