@@ -97,5 +97,13 @@ using namespace std;
 int main()
 {
     // cout << 3/2 <<endl;
+    BTree *a = new BTree;
+    for(int i = 0 ;i<20;i++)
+    {
+        a->insert(i);
+        a->print();
+        cout << endl;
+    }
+    a->print();
     return 0;
 }
